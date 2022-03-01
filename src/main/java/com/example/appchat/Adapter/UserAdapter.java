@@ -35,7 +35,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     String theLastMessage;
 
-    public UserAdapter(Context mContext,List<User> mUsers, boolean ischat){
+    public UserAdapter(Context mContext, List<User> mUsers, boolean ischat) {
         this.mUsers = mUsers;
         this.mContext = mContext;
         this.ischat = ischat;
@@ -44,7 +44,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view  = LayoutInflater.from(mContext).inflate(R.layout.user_item,parent,false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.user_item, parent, false);
         return new UserAdapter.ViewHolder(view);
     }
 
@@ -53,20 +53,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         User user = mUsers.get(position);
         holder.username.setText(user.getUsername());
-        if (user.getImageURL().equals("default")){
+        if (user.getImageURL().equals("default")) {
             holder.profile_image.setImageResource(R.mipmap.ic_launcher);
-        }   else {
+        } else {
             Glide.with(mContext).load(user.getImageURL()).into(holder.profile_image);
         }
 
-        if (ischat){
+        if (ischat) {
             lastMessage(user.getId(), holder.last_msg);
         } else {
             holder.last_msg.setVisibility(View.GONE);
         }
 
-        if (ischat){
-            if (user.getStatus().equals("online")){
+        if (ischat) {
+            if (user.getStatus().equals("online")) {
                 holder.img_on.setVisibility(View.VISIBLE);
                 holder.img_off.setVisibility(View.GONE);
             } else {
@@ -80,7 +80,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(mContext, MessageActivity.class);
-            intent.putExtra("userid",user.getId());
+            intent.putExtra("userid", user.getId());
             mContext.startActivity(intent);
         });
     }
@@ -90,7 +90,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         return mUsers.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView username;
         public ImageView profile_image;
@@ -98,7 +98,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         private ImageView img_off;
         private TextView last_msg;
 
-        public ViewHolder(View itemView){
+        public ViewHolder(View itemView) {
             super(itemView);
 
             username = itemView.findViewById(R.id.username);
@@ -109,7 +109,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         }
     }
-    private void lastMessage (final String userid, TextView last_msg){
+
+    private void lastMessage(final String userid, TextView last_msg) {
         theLastMessage = "default";
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chats");
@@ -117,15 +118,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot snapshot1 : snapshot.getChildren()){
+                for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                     Chat chat = snapshot1.getValue(Chat.class);
-                    if ((chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ) ||
-                            chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())){
+                    if ((chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid)) ||
+                            chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
                         theLastMessage = chat.getMessage();
                     }
                 }
 
-                switch (theLastMessage){
+                switch (theLastMessage) {
                     case "default":
                         last_msg.setText("No Message");
                         break;

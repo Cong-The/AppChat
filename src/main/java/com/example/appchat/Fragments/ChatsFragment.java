@@ -18,6 +18,7 @@ import com.example.appchat.Adapter.UserAdapter;
 import com.example.appchat.MainActivity;
 import com.example.appchat.Model.Chatlist;
 import com.example.appchat.Model.User;
+import com.example.appchat.Notifications.Token;
 import com.example.appchat.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -80,46 +81,16 @@ public class ChatsFragment extends Fragment {
 
             }
         });
-
-        FirebaseMessaging.getInstance().getToken().addOnSuccessListener(token -> {
-            if (!TextUtils.isEmpty(token)) {
-                Log.d(firebaseUser.getUid(),token);
-            } else{
-                Log.w(firebaseUser.getUid(), "token should not be null...");
-            }
-        }).addOnFailureListener(e -> {
-            //handle e
-        }).addOnCanceledListener(() -> {
-            //handle cancel
-        }).addOnCompleteListener(task -> Log.v(firebaseUser.getUid(), "This is the token : " + task.getResult()));
-
+//        updateToken(FirebaseMessaging.getInstance().getToken());
         return view;
     }
 
-//    private void updateToken(String token){
-//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tokens");
-//        Token token1 = new Token(token);
-//        reference.child(firebaseUser.getUid()).setValue(token1);
-//
-//        FirebaseMessaging.getInstance().getToken()
-//                .addOnCompleteListener(new OnCompleteListener<String>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<String> task) {
-//                        if (!task.isSuccessful()) {
-//                            Log.w(, "Fetching FCM registration token failed", task.getException());
-//                            return;
-//                        }
-//
-//                        // Get new FCM registration token
-//                        String token = task.getResult();
-//
-//                        // Log and toast
-//                        String msg = getString(R.string.msg_token_fmt, token);
-//                        Log.d(TAG, msg);
-//                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//    }
+    private void updateToken(String token){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tokens");
+        Token token1 = new Token(token);
+        reference.child(firebaseUser.getUid()).setValue(token1);
+
+    }
 
 
     private void chatList() {

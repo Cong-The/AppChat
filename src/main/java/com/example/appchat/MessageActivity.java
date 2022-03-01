@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -87,7 +88,7 @@ public class MessageActivity extends AppCompatActivity {
 
         });
 
-        apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
+//        apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -177,7 +178,7 @@ public class MessageActivity extends AppCompatActivity {
         //change code
         // add user to chat fragments
         final String userid = intent.getStringExtra("userid"); // chang code get userid
-        DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist")
+        final DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist")
                 .child(firebaseUser.getUid())
                 .child(userid);
         chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -296,6 +297,12 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
+    private void currentUser (String userid){
+        SharedPreferences.Editor editor = getSharedPreferences("PREFS",MODE_PRIVATE).edit();
+        editor.putString("currentuser",userid);
+        editor.apply();
+    }
+
     private void status(String status) {
         reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
 
@@ -309,6 +316,7 @@ public class MessageActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         status("online");
+        currentUser(userid);
     }
 
     @Override
@@ -316,5 +324,6 @@ public class MessageActivity extends AppCompatActivity {
         super.onPause();
         reference.removeEventListener(seenListener);
         status("offline");
+        currentUser("none");
     }
 }
